@@ -1,0 +1,16 @@
+model_config:
+  'attention_resolutions': '16'
+  'class_cond': False
+  'rescale_timesteps': True
+  'rescale_learned_sigmas': True
+  'image_size': 256
+  'learn_sigma': True
+  'noise_schedule': 'linear'
+  'num_channels': 128
+  # 'num_head_channels': 64,
+  'num_heads': 1
+  'num_res_blocks': 2
+  # 'resblock_updown': True
+  'use_checkpoint': False
+  'use_fp16': True,
+  'use_scale_shift_norm': False
