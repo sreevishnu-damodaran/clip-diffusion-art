@@ -1,5 +1,5 @@
 """
-Developed based on original code from
+Developed based on code from
 _______________________________________
 
 https://github.com/openai/guided-diffusion

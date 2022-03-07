@@ -1,4 +1,6 @@
-![](https://i.ibb.co/b5Bt8Tw/cover-artwork.jpg)
+![](https://i.ibb.co/H2sHF0T/cover1-02.jpg)
+
+<br>
 
 # CLIP Diffusion Art
 
@@ -10,27 +12,41 @@ Wandb logging is integrated for training and sampling.
 
 <br>
 
-### Sampling Diffusion Process of Generated Images for Prompt "artstation HQ, photorealistic depiction of an alien city"
+## Generated Samples
 
 <br>
+<br>
 
+![](https://i.ibb.co/DpTYvK3/job18-1.gif)
+ <br>"vibrant watercolor painting of a flower, artstation HQ"
+
+<br>
+<br>
+
+![](https://i.ibb.co/BTWfbf4/23-0.gif)
+<br>"beautiful matte painting of dystopian city, Behance HD"
+
+<br>
+<br>
+
+![](https://i.ibb.co/8dBTzpX/job18-2.gif)
+ <br>"vibrant watercolor painting of a flower, artstation HQ"
+
+<br>
 <br>
 
 ![](https://i.ibb.co/8gsR0w1/2.gif)
+<br>"artstation HQ, photorealistic depiction of an alien city"
 
 <br>
-
-![](https://i.ibb.co/my8JdpW/4.gif)
-
 <br>
 
-![](https://i.ibb.co/hyrrsvP/5.gif)
+### For more generated artworks, visit this [report](https://wandb.ai/sreevishnu-damodaran/clip_diffusion_art/reports/Results-CLIP-Guided-Diffusion-SwinIR--VmlldzoxNjUxNTMz)
 
 <br>
-
 <br>
 
-### Super-resolution Results
+## Super-resolution Results
 
 <br>
 <br>
@@ -42,13 +58,15 @@ Wandb logging is integrated for training and sampling.
 
 ## Credits
 
-[Guided diffusion](https://github.com/openai/guided-diffusion) and [improved diffusion](https://github.com/openai/improved-diffusion) by [OpenAI](https://github.com/openai)
+Developed using techniques and architectures borrowed from original work by the authors below:
 
-Original notebook on CLIP guidance sampling by Katherine Crowson (https://github.com/crowsonkb, https://twitter.com/RiversHaveWings) with improvements by [nerdyrodent](https://github.com/nerdyrodent/CLIP-Guided-Diffusion) and [sadnow](https://github.com/sadnow/360Diffusion) (@sadly_existent) 
+ - [Guided diffusion](https://github.com/openai/guided-diffusion) and [improved diffusion](https://github.com/openai/improved-diffusion) by [OpenAI](https://github.com/openai)
 
-SwinIR: Image Restoration Using Shifted Window Transformer from https://github.com/JingyunLiang/SwinIR
+ - Original notebook on CLIP guidance sampling by Katherine Crowson (https://github.com/crowsonkb, https://twitter.com/RiversHaveWings) with improvements by [nerdyrodent](https://github.com/nerdyrodent/CLIP-Guided-Diffusion) and [sadnow](https://github.com/sadnow/360Diffusion) (@sadly_existent) 
 
-I highly recommend checking out these repos.
+ - SwinIR: Image Restoration Using Shifted Window Transformer from https://github.com/JingyunLiang/SwinIR
+
+Huge thanks to all their great work! I highly recommend checking out these repos.
 
 <br>
 

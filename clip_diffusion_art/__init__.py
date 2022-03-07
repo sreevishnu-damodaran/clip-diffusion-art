@@ -1,3 +1,3 @@
 """
-Codebase for "Improved Denoising Diffusion Probabilistic Models".
+Codebase for "CLIP Diffusion Art".
 """

@@ -1,5 +1,5 @@
 """
-Developed based on original code from
+Developed based on code from
 _______________________________________
 
 https://github.com/openai/guided-diffusion
@@ -83,7 +83,6 @@ class MakeCutouts(nn.Module):
 
             if not self.skip_augs:
                 cutout = self.augs(cutout)
-            # cutouts.append(utils.resample(cutout, (self.cut_size, self.cut_size)))
             cutouts.append(F.adaptive_avg_pool2d(cutout, self.cut_size))
             del cutout
 
@@ -152,9 +151,6 @@ class ClipDiffusion:
         self.model.load_state_dict(torch.load(checkpoint, map_location='cpu'))
         self.model = self.model.to(self.device).eval().requires_grad_(False)
 
-        # if self.device.type == 'cuda':
-        #     self.model = self.model.half()
-
         for name, param in self.model.named_parameters():
             if 'qkv' in name or 'norm' in name or 'proj' in name:
                     param.requires_grad_()
@@ -175,13 +171,16 @@ class ClipDiffusion:
         self.weights = None
         self.loss_fn = None
         self.upscaler = None
-        self.cur_t = None
+        self.cur_t = None 
+        self.cutn = None
+        self.cutn_batches = None
         self.clip_guidance_scale = None
         self.tv_scale = None
         self.range_scale = None
         self.saturation_scale = None
         self.init_scale = None
         self.scale_multiplier = None
+        self.clamp_grad = None
 
         self.loss_values = []
 
@@ -206,18 +205,23 @@ class ClipDiffusion:
         saturation_scale=0,
         init_scale=1000,
         scale_multiplier=1,
+        clamp_grad=True,
         output_dir="output_dir",
         wandb_run=None
         ):
         
         if wandb_run: self.wandb_run = wandb_run
+        
+        self.cutn = cutn
+        self.cutn_batches = cutn_batches
         self.clip_guidance_scale = clip_guidance_scale
         self.tv_scale = tv_scale
         self.range_scale = range_scale
         self.saturation_scale = saturation_scale
         self.init_scale = init_scale
         self.scale_multiplier = scale_multiplier
-
+        self.clamp_grad = clamp_grad
+        
         if init_image:
             self.init_image = Image.open(utils.fetch(init_image)).convert('RGB')
             self.init_image = resize_and_center_crop(init_image, (self.side_x, self.side_y))
@@ -254,9 +258,6 @@ class ClipDiffusion:
             raise RuntimeError('The weights must not sum to 0.')
         self.weights /= self.weights.sum().abs()
 
-        clip_embed = F.normalize(self.target_embeds.mul(
-                            self.weights[:, None]).sum(0, keepdim=True), dim=-1)
-
         if loss_fn == "cos_spherical":
             self.loss_fn = cos_spherical
         else:
@@ -266,7 +267,7 @@ class ClipDiffusion:
 
         self.cur_t = None
 
-        def cond_fn(x, t, y=None, self=self):
+        def cond_fn(x, t, y=None, self=None):
             with torch.enable_grad():
                 x = x.detach().requires_grad_()
                 n = x.shape[0]
@@ -274,21 +275,21 @@ class ClipDiffusion:
                                      dtype=torch.long) * self.cur_t
                 out = self.diffusion.p_mean_variance(
                     self.model, x, my_t, clip_denoised=False,
-                     model_kwargs={'y': y})
+                    model_kwargs={'y': y})
                 fac = self.diffusion.sqrt_one_minus_alphas_cumprod[self.cur_t]
                 x_in = out['pred_xstart'] * fac + x * (1 - fac)
                 x_in_grad = torch.zeros_like(x_in)
                 
-                for i in range(cutn_batches):
+                for i in range(self.cutn_batches):
                     clip_in = self.normalize(self.make_cutouts(x_in.add(1).div(2)))
                     image_embeds = self.clip_model.encode_image(clip_in).float()
                     dists = self.loss_fn(image_embeds.unsqueeze(1),
                      self.target_embeds.unsqueeze(0))
-                    dists = dists.view([cutn, n, -1])
+                    dists = dists.view([self.cutn, n, -1])
                     losses = dists.mul(self.weights).sum(2).mean(0)
                     self.loss_values.append(losses.sum().item()) # log loss, probably shouldn't do per cutn_batch
                     x_in_grad += (torch.autograd.grad(losses.sum() 
-                            * self.clip_guidance_scale, x_in)[0] / cutn_batches)
+                            * self.clip_guidance_scale, x_in)[0] / self.cutn_batches)
                 
                 tv_losses = tv_loss(x_in)
                 range_losses = range_loss(out['pred_xstart'])
@@ -306,15 +307,19 @@ class ClipDiffusion:
                 self.wandb_run.log({"clip_loss": self.loss_values[-1],
                     "tv_loss": tv_losses.item(),
                     "sat_losses": sat_losses.item(),
-                    "total_loss": total_loss.item()})
+                    "range_losses": range_losses.item(),
+                    "total_loss": total_loss.item()
+                    })
                 
                 x_in_grad += torch.autograd.grad(total_loss, x_in)[0]
                 grad = -torch.autograd.grad(x_in, x, x_in_grad)[0]
+
+            if self.clamp_grad:
+                magnitude = grad.square().mean().sqrt()
+                return grad * magnitude.clamp(max=0.05) / magnitude
             
             return grad
 
-
-        cond_fn_ = partial(cond_fn, self=self)
 
         if self.sampling.startswith('ddim'):
             sample_fn = self.diffusion.ddim_sample_loop_progressive
@@ -324,13 +329,15 @@ class ClipDiffusion:
         for i in range(num_samples):
             self.cur_t = self.diffusion.num_timesteps - skip_timesteps - 1
 
+            cond_fn_ = partial(cond_fn, self=self)
+
             if self.sampling.startswith('ddim'):
                 samples = sample_fn(
                     self.model,
                     (batch_size, 3, self.side_y, self.side_x),
                     clip_denoised=clip_denoised,
                     model_kwargs={},
-                    cond_fn=cond_fn,
+                    cond_fn=cond_fn_,
                     progress=True,
                     skip_timesteps=skip_timesteps,
                     init_image=self.init_image,
@@ -343,7 +350,7 @@ class ClipDiffusion:
                     (batch_size, 3, self.side_y, self.side_x),
                     clip_denoised=clip_denoised,
                     model_kwargs={},
-                    cond_fn=cond_fn,
+                    cond_fn=cond_fn_,
                     progress=True,
                     skip_timesteps=skip_timesteps,
                     init_image=self.init_image,
@@ -456,6 +463,8 @@ def main():
                    help='controls the adherence to the init image')
     p.add_argument('--scale_multiplier', type=int, default=50,
                    help='scales clip_guidance_scale, tv_scale and range_scale')
+    p.add_argument('--disable_grad_clamp', default=False, action="store_true",
+                   help='disable gradient clamping')
     p.add_argument('--sr_model_path', type=str, default=None,
                    help='SwinIR super-resolution model checkpoint')
     p.add_argument('--large_sr', default=False, action="store_true",
@@ -530,6 +539,7 @@ def main():
                         saturation_scale=args.saturation_scale,
                         init_scale=args.init_scale,
                         scale_multiplier=args.scale_multiplier,
+                        clamp_grad=(not args.disable_grad_clamp),
                         output_dir=args.output_dir,
                         wandb_run=wandb_run
                     )
