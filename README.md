@@ -39,11 +39,9 @@ Wandb logging is integrated for training and sampling.
 <br>"artstation HQ, photorealistic depiction of an alien city"
 
 <br>
-<br>
 
 ### For more generated artworks, visit this [report](https://wandb.ai/sreevishnu-damodaran/clip_diffusion_art/reports/Results-CLIP-Guided-Diffusion-SwinIR--VmlldzoxNjUxNTMz)
 
-<br>
 <br>
 
 ## Super-resolution Results
