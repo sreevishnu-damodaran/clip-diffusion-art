@@ -51,7 +51,7 @@ Wandb logging is integrated for training and sampling.
 <br>
 <br>
 
-![](https://i.ibb.co/9tjBrWD/chrome-capture-2022-1-25-1.gif)
+![](https://i.ibb.co/Gss0y38/sr-zoom-optimized.gif)
 
 <br>
 <br>
