@@ -412,7 +412,7 @@ def main():
                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument('prompts', type=str, nargs='*',
                    help='text prompts')
-    p.add_argument('--images', type=str, nargs='*',
+    p.add_argument('--images', type=str, nargs='*', default=None,
                    help='image prompts')
     p.add_argument('--checkpoint', type=str, default=None,
                    help='diffusion model checkpoint')
@@ -434,17 +434,20 @@ def main():
     help='timestep respacing sampling methods to use')
     p.add_argument('--diffusion_steps', type=int, default=1000,
                    help='number of diffusion timesteps')
-    p.add_argument('--skip_timestep', type=int, default=5,
+    p.add_argument('--skip_timesteps', type=int, default=5,
                    help='diffusion timesteps to skip')
     p.add_argument('--clip_denoised', default=False, action="store_true",
                    help='enable to filter out noise from generation')
-    p.add_argument('--randomize_class', default=False, action="store_true",
-                   help='enable to change imagenet class randomly in each iteration')
+    p.add_argument('--randomize_class_disable', default=False, action="store_true",
+                   help='disables changing imagenet class randomly in each iteration')
     p.add_argument('--eta', type=float, default=0.,
                    help='the amount of noise to add during sampling (0-1)')
+    p.add_argument('--clip_model', type=str, default="ViT-B16",
+                    choices=["RN50","RN101","RN50x4","RN50x16","RN50x64","ViT-B/32","ViT-B/16","ViT-L/14"],
+                   help='loss fn to use for CLIP guidance')            
     p.add_argument('--skip_augs', default=False, action="store_true",
                    help='enable to skip torchvision augmentations')
-    p.add_argument('--cutn', type=int, default=16,
+    p.add_argument('--cutn', type=int, default=30,
                    help='the number of random crops to use')
     p.add_argument('--cut_batches', type=int, default=4,
                    help='number of crops to take from the image')
@@ -528,7 +531,7 @@ def main():
                         num_samples=args.num_samples,
                         skip_timesteps=args.skip_timesteps,
                         clip_denoised=args.clip_denoised,
-                        randomize_class=args.randomize_class,
+                        randomize_class=(not args.randomize_class_disable),
                         eta=args.eta,
                         skip_augs=args.skip_augs,
                         cutn=args.cutn,
@@ -552,7 +555,7 @@ def main():
     for i, out_image in enumerate(out_generator):
          # SwinIR Upscaling
         if args.sr_model_path:
-            print("\nUpscaling generated image using SwinIR SR")
+            print("\nUpscaling generated image using SwinIR SR...")
             out_image = clip_diffusion.upscale(
                                             out_image,
                                             args.sr_model_path,
@@ -571,11 +574,16 @@ def main():
     if wandb_run is not None:
         for k in range(args.batch_size):
             for i in range(args.num_samples):
+                img_files = glob.glob(os.path.join(args.output_dir,
+                                    f"sample{i}_output{k}_steps", '*'))
                 wandb.log(
-                    {f"sample{i}_output{k}": [wandb.Image(img_path) for img_path
-                    in sorted(glob.glob(os.path.join(args.output_dir,
-                        f"sample{i}_output{k}_steps", '*')))]}
+                {f"sample{i}_output{k}": [wandb.Image(img_path) for img_path
+                in sorted(img_files,
+                          key=lambda x: int(os.path.splitext(x)[0]
+                          .split("_")[-1].lstrip("step")))]}
                 )
+
+    wandb.finish()
 
 if __name__ == '__main__':
     main()
