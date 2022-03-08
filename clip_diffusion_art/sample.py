@@ -210,8 +210,7 @@ class ClipDiffusion:
         wandb_run=None
         ):
         
-        if wandb_run: self.wandb_run = wandb_run
-        
+        self.wandb_run = wandb_run
         self.cutn = cutn
         self.cutn_batches = cutn_batches
         self.clip_guidance_scale = clip_guidance_scale
@@ -303,13 +302,14 @@ class ClipDiffusion:
                     init_losses = self.lpips_model(x_in, self.init_image)
                     total_loss = (total_loss + init_losses.sum() 
                                     * self.init_scale)
-
-                self.wandb_run.log({"clip_loss": self.loss_values[-1],
-                    "tv_loss": tv_losses.item(),
-                    "sat_losses": sat_losses.item(),
-                    "range_losses": range_losses.item(),
-                    "total_loss": total_loss.item()
-                    })
+                
+                if self.wandb_run is not None:
+                    self.wandb_run.log({"clip_loss": self.loss_values[-1],
+                        "tv_loss": tv_losses.item(),
+                        "sat_losses": sat_losses.item(),
+                        "range_losses": range_losses.item(),
+                        "total_loss": total_loss.item()
+                        })
                 
                 x_in_grad += torch.autograd.grad(total_loss, x_in)[0]
                 grad = -torch.autograd.grad(x_in, x, x_in_grad)[0]
