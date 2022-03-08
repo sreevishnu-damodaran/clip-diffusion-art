@@ -41,7 +41,7 @@ import torchvision.transforms.functional as TF
 import wandb
 import lpips
 
-import clip_diffusion_art.utils as utils
+import clip_diffusion_art.cda_utils as cda_utils
 from clip_diffusion_art.swinir import SwinIRPredictor
 
 sys.path.append('./CLIP')
@@ -223,9 +223,9 @@ class ClipDiffusion:
         self.clamp_grad = clamp_grad
         
         if init_image:
-            self.init_image = Image.open(utils.fetch(init_image)).convert('RGB')
+            self.init_image = Image.open(cda_utils.fetch(init_image)).convert('RGB')
             self.init_image = resize_and_center_crop(init_image, (self.side_x, self.side_y))
-            self.init_image = utils.pil_to_tensor(init_image).to(self.device)[None]
+            self.init_image = cda_utils.pil_to_tensor(init_image).to(self.device)[None]
 
         self.make_cutouts = MakeCutouts(self.clip_size, cutn, skip_augs=skip_augs)
 
@@ -240,7 +240,7 @@ class ClipDiffusion:
         if images is not None:
             for prompt in images:
                 path, weight = parse_prompt(prompt)
-                img = Image.open(utils.fetch(path)).convert('RGB')
+                img = Image.open(cda_utils.fetch(path)).convert('RGB')
                 img = TF.resize(img, min(self.side_x, self.side_y, *img.size),
                                 T.InterpolationMode.LANCZOS)
                 batch = self.make_cutouts(
@@ -368,7 +368,7 @@ class ClipDiffusion:
                     self.cur_t -= 1
 
                     for k, image in enumerate(sample['pred_xstart']):
-                        pil_image = utils.tensor_to_pil(image)
+                        pil_image = cda_utils.tensor_to_pil(image)
                         filename = f'output{k}_step{j}.png'
                         pil_image.save(os.path.join(output_dir,
                          f"sample{i}_output{k}_steps", filename))
@@ -392,7 +392,7 @@ class ClipDiffusion:
                 if not os.path.exists(model_path):
                     print("Downloading and using SwinIR SR Model - realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN")
                     url = "https://github.com/JingyunLiang/SwinIR/releases/download/v0.0/003_realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN.pth"
-                    utils.download_weights(url, "pretrained_models")
+                    cda_utils.download_weights(url, "pretrained_models")
 
             self.upscaler = SwinIRPredictor('real_sr', model_path, large_sr)
             
@@ -508,7 +508,7 @@ def main():
         checkpoint = "pretrained_models/256x256_clip_diffusion_art.pt"
         if not os.path.exists(checkpoint):
             url = "https://api.wandb.ai/files/sreevishnu-damodaran/clip_diffusion_art/29bag3br/256x256_clip_diffusion_art.pt"
-            utils.download_weights(url, "pretrained_models")        
+            cda_utils.download_weights(url, "pretrained_models")        
     else:
         checkpoint = args.checkpoint
 

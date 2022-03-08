@@ -23,7 +23,7 @@ from torch.optim import AdamW
 import wandb
 
 from clip_diffusion_art import logger
-from clip_diffusion_art.utils import (
+from clip_diffusion_art.cda_utils import (
     args_to_dict,
     add_dict_to_argparser,
 )

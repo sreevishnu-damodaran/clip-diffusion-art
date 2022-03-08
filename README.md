@@ -113,10 +113,27 @@ Refer to the openai [improved diffusion](https://github.com/openai/improved-diff
 
 <br>
 
+
+### Download SR pre-trained weights
+```
+wget https://github.com/JingyunLiang/SwinIR/releases/download/v0.0/003_realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN.pth
+```
+
+Passing the `sr_model_path` flag to `sample.py ` performs super-resolution to each image after sampling.
+
 ## Sample Images with CLIP Guidance
 
 ```
-python clip_diffusion_art/sample.py "artistic depiction of a utopian future"
+python clip_diffusion_art/sample.py \
+"beautiful matte painting of dystopian city, Behance HD" \
+--checkpoint 256x256_clip_diffusion_art.pt \
+--sampling "ddim50" \
+--cutn 60 \
+--cut_batches 4 \
+--sr_model_path pretrained_models/003_realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN.pth \
+--large_sr \
+--output_dir "outputs"
+
 ```
 
 ### Options:
@@ -181,8 +198,6 @@ python clip_diffusion_art/sample.py "artistic depiction of a utopian future"
 <br>
 
 ## Apply Super-resolution
-
-Passing the `sr_model_path` flag to `sample.py ` performs super-resolution to each image after sampling.
 
 Use the following to run super-resolution on other images or use it for other tasks (grayscale/color image denoising/JPEG compression artifact reduction)
 
