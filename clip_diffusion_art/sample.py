@@ -416,6 +416,8 @@ def main():
                    help='image prompts')
     p.add_argument('--checkpoint', type=str, default=None,
                    help='diffusion model checkpoint')
+    p.add_argument('--model_config', type=str, default=None,
+                   help='diffusion model config yaml')
     p.add_argument('--wandb_project', type=str, default=None,
                    help='enable wandb logging and use this project')
     p.add_argument('--wandb_name', type=str, default=None,
