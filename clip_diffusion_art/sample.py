@@ -444,7 +444,7 @@ def main():
                    help='the amount of noise to add during sampling (0-1)')
     p.add_argument('--clip_model', type=str, default="ViT-B16",
                     choices=["RN50","RN101","RN50x4","RN50x16","RN50x64","ViT-B/32","ViT-B/16","ViT-L/14"],
-                   help='loss fn to use for CLIP guidance')            
+                   help='CLIP pre-trained model to use') 
     p.add_argument('--skip_augs', default=False, action="store_true",
                    help='enable to skip torchvision augmentations')
     p.add_argument('--cutn', type=int, default=30,

@@ -127,6 +127,7 @@ Passing the `sr_model_path` flag to `sample.py ` performs super-resolution to ea
 python clip_diffusion_art/sample.py \
 "beautiful matte painting of dystopian city, Behance HD" \
 --checkpoint 256x256_clip_diffusion_art.pt \
+--model_config "clip_diffusion_art/configs/256x256_clip_diffusion_art.yaml" \
 --sampling "ddim50" \
 --cutn 60 \
 --cut_batches 4 \
@@ -137,63 +138,39 @@ python clip_diffusion_art/sample.py \
 ```
 
 ### Options:
-`--images` - image prompts (default=None)
-
-`--checkpoint` - diffusion model checkpoint to use for sampling
-
-`--wandb_project` - enable wandb logging and use this project name
-
-`--wandb_name` - optinal run name to use for wandb logging
-
-`--wandb_entity` - optinal entity to use for wandb logging
-
-`--num_samples` - - number of samples to generate (default=1)
-
-`--batch_size` - default=1batch size for the diffusion model
-
-`--sampling` - timestep respacing sampling methods to use (default="ddim50", choices=[25, 50, 100, 150, 250, 500, 1000, ddim25, ddim50, ddim100, ddim150, ddim250, ddim500, ddim1000])
-
-`--diffusion_steps` - number of diffusion timesteps (default=1000)
-
-`--skip_timestep` - diffusion timesteps to skip (default=5)
-
-`--clip_denoised` - enable to filter out noise from generation (default=False)
-
-`--randomize_class` - enable to change imagenet class randomly in each iteration (default=False)
-
-`--eta` - the amount of noise to add during sampling (default=0)
-
-`--skip_augs` - enable to skip torchvision augmentations (default=False)
-
-`--cutn` - the number of random crops to use (default=16)
-
-`--cut_batches` - number of crops to take from the image (default=4)
-
-`--init_image` - init image to use while sampling (default=None)
-
-`--loss_fn` - loss fn to use for CLIP guidance (default="spherical", choices=["spherical" "cos_spherical"])
-
-`--clip_guidance_scale` - CLIP guidance scale (default=5000)
-
-`--tv_scale` - controls smoothing in samples (default=100)
-
-`--range_scale` - controls the range of RGB values in samples (default=150)
-
-`--saturation_scale` - controls the saturation in samples (default=0)
-
-`--init_scale` - controls the adherence to the init image (default=1000)
-
-`--scale_multiplier` - scales clip_guidance_scale tv_scale and range_scale (default=50)
-
-`--sr_model_path` - SwinIR super-resolution model checkpoint (default=None)
-
-`--large_sr` - enable to use large SwinIR super-resolution model (default=False)
-
-`--output_dir` - output images directory (default="output_dir")
-
-`--seed` - the random seed (default=47)
-
-`--device` - the device to use 
+`--images` - image prompts (default=None)<br>
+`--checkpoint` - diffusion model checkpoint to use for sampling<br>
+`--model_config` - diffusion model config yaml<br>
+`--wandb_project` - enable wandb logging and use this project name<br>
+`--wandb_name` - optinal run name to use for wandb logging<br>
+`--wandb_entity` - optinal entity to use for wandb logging<br>
+`--num_samples` - - number of samples to generate (default=1)<br>
+`--batch_size` - default=1batch size for the diffusion model<br>
+`--sampling` - timestep respacing sampling methods to use (default="ddim50", choices=[25, 50, 100, 150, 250, 500, 1000, ddim25, ddim50, ddim100, ddim150, ddim250, ddim500, ddim1000])<br>
+`--diffusion_steps` - number of diffusion timesteps (default=1000)<br>
+`--skip_timesteps` - diffusion timesteps to skip (default=5)<br>
+`--clip_denoised` - enable to filter out noise from generation (default=False)<br>
+`--randomize_class_disable` - disables changing imagenet class randomly in each iteration (default=False)<br>
+`--eta` - the amount of noise to add during sampling (default=0)<br>
+`--clip_model` - CLIP pre-trained model to use (default="ViT-B16",
+choices=["RN50","RN101","RN50x4","RN50x16","RN50x64","ViT-B/32","ViT-B/16","ViT-L/14"])<br>
+`--skip_augs` - enable to skip torchvision augmentations (default=False)<br>
+`--cutn` - the number of random crops to use (default=16)<br>
+`--cut_batches` - number of crops to take from the image (default=4)<br>
+`--init_image` - init image to use while sampling (default=None)<br>
+`--loss_fn` - loss fn to use for CLIP guidance (default="spherical", choices=["spherical" "cos_spherical"])<br>
+`--clip_guidance_scale` - CLIP guidance scale (default=5000)<br>
+`--tv_scale` - controls smoothing in samples (default=100)<br>
+`--range_scale` - controls the range of RGB values in samples (default=150)<br>
+`--saturation_scale` - controls the saturation in samples (default=0)<br>
+`--init_scale` - controls the adherence to the init image (default=1000)<br>
+`--scale_multiplier` - scales clip_guidance_scale tv_scale and range_scale (default=50)<br>
+`--disable_grad_clamp` - disable gradient clamping (default=False)<br>
+`--sr_model_path` - SwinIR super-resolution model checkpoint (default=None)<br>
+`--large_sr` - enable to use large SwinIR super-resolution model (default=False)<br>
+`--output_dir` - output images directory (default="output_dir")<br>
+`--seed` - the random seed (default=47)<br>
+`--device` - the device to use <br>
 
 <br>
 
