@@ -442,14 +442,14 @@ def main():
                    help='disables changing imagenet class randomly in each iteration')
     p.add_argument('--eta', type=float, default=0.,
                    help='the amount of noise to add during sampling (0-1)')
-    p.add_argument('--clip_model', type=str, default="ViT-B16",
+    p.add_argument('--clip_model', type=str, default="ViT-B/16",
                     choices=["RN50","RN101","RN50x4","RN50x16","RN50x64","ViT-B/32","ViT-B/16","ViT-L/14"],
                    help='CLIP pre-trained model to use') 
     p.add_argument('--skip_augs', default=False, action="store_true",
                    help='enable to skip torchvision augmentations')
     p.add_argument('--cutn', type=int, default=30,
                    help='the number of random crops to use')
-    p.add_argument('--cut_batches', type=int, default=4,
+    p.add_argument('--cutn_batches', type=int, default=4,
                    help='number of crops to take from the image')
     p.add_argument('--init_image', type=str, default=None,
                    help='init image to use  while sampling')

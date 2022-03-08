@@ -152,11 +152,11 @@ python clip_diffusion_art/sample.py \
 `--clip_denoised` - enable to filter out noise from generation (default=False)<br>
 `--randomize_class_disable` - disables changing imagenet class randomly in each iteration (default=False)<br>
 `--eta` - the amount of noise to add during sampling (default=0)<br>
-`--clip_model` - CLIP pre-trained model to use (default="ViT-B16",
+`--clip_model` - CLIP pre-trained model to use (default="ViT-B/16",
 choices=["RN50","RN101","RN50x4","RN50x16","RN50x64","ViT-B/32","ViT-B/16","ViT-L/14"])<br>
 `--skip_augs` - enable to skip torchvision augmentations (default=False)<br>
 `--cutn` - the number of random crops to use (default=16)<br>
-`--cut_batches` - number of crops to take from the image (default=4)<br>
+`--cutn_batches` - number of crops to take from the image (default=4)<br>
 `--init_image` - init image to use while sampling (default=None)<br>
 `--loss_fn` - loss fn to use for CLIP guidance (default="spherical", choices=["spherical" "cos_spherical"])<br>
 `--clip_guidance_scale` - CLIP guidance scale (default=5000)<br>
