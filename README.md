@@ -4,11 +4,15 @@
 
 # CLIP Diffusion Art
 
-Fine-tune diffusion models on custom datasets and sample with text-conditioning using CLIP guidance combined with SwinIR for super resolution.
+Fine-tune diffusion models on custom datasets and sample with text-conditioning using CLIP guidance and SwinIR for super resolution.
 
-A custom dataset created from artworks in the public domain was used for fine-tuning in this repo.
+#### 📌 Dataset with public domain artworks created for this project:
+ [Artworks in Public Domain](kaggle.com/sreevishnudamodaran/artworks-in-public-domain)
+ 
+#### 📌 Link to interactive run in notebook:
+ [Stunning Art with CLIP Guided Diffusion+SwinIR](https://www.kaggle.com/sreevishnudamodaran/stunning-art-with-clip-guided-diffusion-swinir)
 
-Wandb logging is integrated for training and sampling.
+📌 Wandb logging is integrated for training and sampling.
 
 <br>
 
